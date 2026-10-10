@@ -1,0 +1,19 @@
+<h2>Olympic games app</h2>
+<hr />
+<p class="intro">
+  Welcome to the Olympic Games dashboard. Discover the medals won by each country and explore their Olympic performances.
+</p>
+<div>
+  @if (isLoading) {
+    <p class="center">Chargement...</p>
+  } @else if (error) {
+    <p class="center">{{ error }}</p>
+  } @else if (isEmpty) {
+    <p class="center">Aucune donnée trouvée</p>
+  } @else {
+    <div>
+      <app-header-component [stats]="stats" [titlePage]="titlePage"/>
+    </div>
+    <app-medal-chart [countries]="countries" [sumOfAllMedalsYears]="medals"/>
+  }
+</div>

@@ -1,4 +1,5 @@
 import {Component, input, InputSignal} from '@angular/core';
+import {Stat} from "../../models/olympic-models";
 
 @Component({
   selector: 'app-stat-card',
@@ -8,7 +9,7 @@ import {Component, input, InputSignal} from '@angular/core';
   styleUrl: './stat-card.component.scss'
 })
 export class StatCardComponent {
-  title : InputSignal<string> = input.required<string>();
-  value: InputSignal<number> = input.required<number>();
+  titlePage: InputSignal<string> = input.required<string>();
+  stats: InputSignal<Stat[]> = input.required<Stat[]>();
 
 }

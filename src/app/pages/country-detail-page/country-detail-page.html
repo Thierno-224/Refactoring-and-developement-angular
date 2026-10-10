@@ -1,0 +1,18 @@
+@if (isLoading) {
+  <p class="center">Chargement...</p>
+} @else if (error) {
+  <p class="center">{{error}}</p>
+} @else if (isEmpty) {
+  <p class="center">Aucune donnée trouvée</p>
+} @else {
+  <div>
+    <app-header-component [stats]="stats" [titlePage]="titlePage" />
+      <app-country-chart [medals]="medals" [years]="years" />
+    <div class="center">
+      <a routerLink="">Go back</a>
+    </div>
+  </div>
+}
+
+
+

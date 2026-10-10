@@ -1,0 +1,14 @@
+<div>
+  <div class="center">
+    <div>{{ titlePage() }}</div>
+  </div>
+
+  <div class="split">
+    @for (stat of stats(); track stat.label) {
+      <div>
+        <p>{{ stat.label }}</p>
+        <p>{{ stat.value }}</p>
+      </div>
+    }
+  </div>
+</div>
