@@ -1,29 +1,56 @@
-# OlympicGamesStarter
+# Olympic Games
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.6.
+Ce projet a été généré avec Angular CLI version 18.0.6.
 
-Don't forget to install your node_modules before starting (`npm install`).
+L'application permet de consulter les médailles obtenues par différents pays aux Jeux Olympiques et d'accéder au détail de leurs participations.
 
-## Development server
+## Installation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Installer les dépendances :
+
+```bash
+npm install
+```
+
+## Serveur de développement
+
+Lancer :
+
+```bash
+ng serve
+```
+
+Puis accéder à l'application sur `http://localhost:4200/`.
+
+L'application se recharge automatiquement lorsque les fichiers sources sont modifiés.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Lancer :
 
-## Where to start
+```bash
+ng build
+```
 
-As you can see, an architecture has already been defined for the project. It is just a suggestion, you can choose to use your own. The predefined architecture includes (in addition to the default angular architecture) the following:
+Les fichiers générés sont disponibles dans le dossier `dist/`.
 
-- `components` folder: contains every reusable components
-- `pages` folder: contains components used for routing
-- `core` folder: contains the business logic (`services` and `models` folders)
+## Architecture
 
-I suggest you to start by understanding this starter code. Pay an extra attention to the `app-routing.module.ts` and the `olympic.service.ts`.
+Le projet est organisé de manière à séparer les différentes responsabilités :
 
-Once mastered, you should continue by creating the typescript interfaces inside the `models` folder. As you can see I already created two files corresponding to the data included inside the `olympic.json`. With your interfaces, improve the code by replacing every `any` by the corresponding interface.
+- `components/` : contient les composants réutilisables.
+- `pages/` : contient les pages utilisées par le système de routing.
+- `services/` : contient la logique d'accès aux données.
+- `models/` : contient les interfaces TypeScript représentant les données.
 
-You're now ready to implement the requested features.
+Une description plus détaillée est disponible dans `ARCHITECTURE.md`.
 
-Good luck!
+## Choix techniques
+
+L'accès aux données est centralisé dans `DataService`.
+
+Les données sont typées avec des interfaces TypeScript afin d'éviter l'utilisation de `any`.
+
+Les graphiques sont gérés avec Chart.js et séparés dans des composants réutilisables.
+
+Les pays sont triés par ordre alphabétique afin de conserver un affichage cohérent entre les différentes pages.

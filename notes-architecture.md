@@ -11,14 +11,18 @@ et les observables.
 
 ---
 
-## 1. HomeComponent
+## 1. DashboardPage
 
 ### Appel HTTP directement dans le composant
 
-Le composant `HomeComponent` utilise directement `HttpClient`
-pour récupérer les données depuis le fichier `olympic.json`.
+La page `HomeComponent` utilise directement `HttpClient` en l'injectant via 
+le constructeur pour récupérer les données depuis le fichier `olympic.json`.
 
-**Commentaire :**
+```ts
+constructor(private router: Router, private http:HttpClient) {}
+```
+
+  **Commentaire :**
 
 Le composant s'occupe lui-même de récupérer les données alors que
 cette responsabilité pourrait être séparée du composant.
@@ -32,6 +36,10 @@ Plusieurs `any` sont présents dans le composant :
 - dans la requête HTTP ;
 - dans les `map()` ;
 - dans les `reduce()`.
+
+````ts
+const medals = data.map((i: any) => i.participations.map((i: any) =>
+````
 
 **Commentaire :**
 
@@ -73,12 +81,31 @@ Il y a beaucoup de logique directement dans `ngOnInit()`.
 
 Certaines lignes sont longues et difficiles à comprendre rapidement.
 
+````ts
+ngOnInit() {
+    this.http.get<any[]>(this.olympicUrl).pipe().subscribe(
+      (data) => {
+        console.log(`Liste des données : ${JSON.stringify(data)}`);
+        if (data && data.length > 0) {
+          this.totalJOs = Array.from(new Set(data.map((i: any) => i.participations.map((f: any) => f.year)).flat())).length;
+          const countries: string[] = data.map((i: any) => i.country);
+          this.totalCountries = countries.length;
+          const medals = data.map((i: any) => i.participations.map((i: any) => (i.medalsCount)));
+          const sumOfAllMedalsYears = medals.map((i) => i.reduce((acc: any, i: any) => acc + i, 0));
+          this.buildPieChart(countries, sumOfAllMedalsYears);
+        }
+        
+````
+
 ---
 
 ### Utilisation de `console.log`
 
 Le composant contient des `console.log()` pour afficher les données
 et les erreurs.
+````ts
+console.log(`Liste des données : ${JSON.stringify(data)}`);
+````
 
 **Commentaire :**
 
@@ -93,7 +120,9 @@ de l'application.
 
 La requête HTTP contient :
 
-`pipe().subscribe(...)`
+````ts
+this.http.get<any[]>(this.olympicUrl).pipe().subscribe()
+````
 
 **Commentaire :**
 
@@ -108,6 +137,13 @@ Il ne sert donc à rien dans son état actuel.
 Une erreur HTTP est enregistrée dans la propriété `error`.
 
 Cependant, cette erreur n'est pas affichée dans le template HTML.
+
+````ts
+      (error:HttpErrorResponse) => {
+        console.log(`erreur : ${error}`);
+        this.error = error.message
+      }
+````
 
 **Commentaire :**
 
@@ -127,12 +163,16 @@ au composant.
 
 ---
 
-## 2. CountryComponent
+## 2. CountryDetailPage
 
 ### Appel HTTP directement dans le composant
 
 Comme `HomeComponent`, `CountryComponent` utilise directement
 `HttpClient` pour récupérer `olympic.json`.
+
+```ts
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {}
+```
 
 **Commentaire :**
 
@@ -153,6 +193,11 @@ Le composant contient plusieurs `any`, par exemple dans :
 - `map()` ;
 - `reduce()`.
 
+````ts
+    this.http.get<any[]>(this.olympicUrl).pipe().subscribe(
+      (data)
+````
+
 **Commentaire :**
 
 Il est difficile de connaître précisément la structure des objets
@@ -166,10 +211,16 @@ Le typage TypeScript n'est donc pas vraiment utilisé.
 
 Le composant récupère le nom du pays avec :
 
-`this.route.paramMap.subscribe(...)`
+```ts 
+this.route.paramMap.subscribe(...)
+```
 
 Il effectue ensuite séparément une deuxième souscription
 pour récupérer les données.
+
+````ts
+this.http.get<any[]>(this.olympicUrl).pipe().subscribe()
+````
 
 **Commentaire :**
 
@@ -194,6 +245,10 @@ Le code utilise ensuite directement :
 Dans ce cas, `selectedCountry` peut être `undefined`
 et le code risque de provoquer une erreur.
 
+````ts
+const selectedCountry = data.find((i: any) => i.country === countryName);
+````
+
 ---
 
 ### Calculs directement dans le composant
@@ -216,6 +271,11 @@ en chaînes de caractères avec `toString()`.
 Ils sont ensuite reconvertis en nombres avec `parseInt()`
 pour calculer leur somme.
 
+````ts
+const nbAthletes = selectedCountry?.participations.map((i: any) => i.athleteCount.toString()) ?? []
+this.totalAthletes = nbAthletes.reduce((accumulator: any, item: any) => accumulator + parseInt(item), 0);
+````
+
 **Commentaire :**
 
 Ces conversions rendent le code plus compliqué alors que
@@ -227,8 +287,9 @@ les valeurs représentent à l'origine des nombres.
 
 Le code contient :
 
-`participations.map((i) => i)`
-
+````ts
+participations.map((i) => i)
+````
 Cette opération récupère chaque élément sans le modifier.
 
 **Commentaire :**
@@ -247,9 +308,11 @@ avant `subscribe()`.
 **Commentaire :**
 
 Aucun opérateur RxJS n'est utilisé dans ce `pipe()`.
-
 Il n'apporte donc rien.
 
+````ts
+this.http.get<any[]>(this.olympicUrl).pipe().subscribe
+````
 ---
 
 ### Router non utilisé
@@ -265,7 +328,7 @@ Cette dépendance semble inutile dans l'état actuel du code.
 
 ### Création du graphique dans le composant
 
-`CountryComponent` crée directement son graphique Chart.js
+`CountryDetailPage` crée directement son graphique Chart.js
 avec la méthode `buildChart()`.
 
 **Commentaire :**
@@ -280,6 +343,9 @@ les calculs et le graphique.
 ### Titre dans un `div`
 
 Le titre `titlePage` est affiché dans un simple `<div>`.
+````html
+<div>{{ titlePage }}</div>
+````
 
 **Commentaire :**
 
@@ -316,7 +382,9 @@ aucun message d'erreur n'est visible sur la page.
 
 Le canvas contient :
 
-`{{ pieChart }}`
+````html
+<canvas id="DashboardPieChart">{{ pieChart }}</canvas>
+````
 
 **Commentaire :**
 
@@ -371,7 +439,9 @@ sur l'URL d'un pays inexistant.
 
 Le canvas contient :
 
-`{{ lineChart }}`
+````html
+<canvas id="countryChart">{{ lineChart }}</canvas>
+````
 
 **Commentaire :**
 
@@ -400,7 +470,9 @@ entre les deux pages.
 
 `NotFoundComponent` possède un constructeur vide :
 
-`constructor() { }`
+````ts
+constructor() { }
+````
 
 **Commentaire :**
 
@@ -410,21 +482,6 @@ et aucune dépendance n'est injectée.
 Il semble donc inutile.
 
 ESLint signale également ce problème.
-
----
-
-### Lien "Go back"
-
-La page contient :
-
-`<a routerLink="">Go back</a>`
-
-**Commentaire :**
-
-Le texte "Go back" laisse penser que l'utilisateur va revenir
-à la page précédente.
-
-Cependant, le lien utilise une route Angular.
 
 ---
 
@@ -439,7 +496,7 @@ ou des services pour gérer les données olympiques.
 **Commentaire :**
 
 Cela explique en partie pourquoi `HomeComponent`
-et `CountryComponent` récupèrent et manipulent directement
+et `ContryComponent` récupèrent et manipulent directement
 les données.
 
 ---
@@ -472,7 +529,7 @@ Les problèmes concernent principalement le typage du code.
 Après avoir parcouru le projet, j'ai principalement remarqué
 que les composants ont beaucoup de responsabilités.
 
-`HomeComponent` et `CountryComponent` récupèrent eux-mêmes
+`DashboardPage` et `CountryDetailPage` récupèrent eux-mêmes
 les données, effectuent les calculs et créent les graphiques.
 
 J'ai également remarqué beaucoup de `any`, plusieurs morceaux
@@ -492,9 +549,9 @@ src/app/
 │
 ├── components/
 │   ├── stat-card/
-│   │   ├── stat-card.component.ts
-│   │   ├── stat-card.component.html
-│   │   └── stat-card.component.scss
+│   │   ├── header-component.ts
+│   │   ├── header-component.html
+│   │   └── header-component.scss
 │   │
 │   ├── medal-chart/
 │   │   ├── medal-chart.component.ts
@@ -508,14 +565,14 @@ src/app/
 │
 ├── pages/
 │   ├── home/
-│   │   ├── home.component.ts
-│   │   ├── home.component.html
-│   │   └── home.component.scss
+│   │   ├── dashboard-page.ts
+│   │   ├── dashboard-page.html
+│   │   └── dashboard-page.scss
 │   │
 │   ├── country/
-│   │   ├── country.component.ts
-│   │   ├── country.component.html
-│   │   └── country.component.scss
+│   │   ├── country-detail-page.ts
+│   │   ├── country-detail-page.html
+│   │   └── country-detail-page.scss
 │   │
 │   └── not-found/
 │       ├── not-found.component.ts

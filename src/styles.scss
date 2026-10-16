@@ -3,6 +3,22 @@
     flex-direction: column;
 }
 
+a {
+  display: inline-block;
+  padding: 10px 24px;
+  border: 2px solid #0b868f;
+  border-radius: 8px;
+  color: #0b868f;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s;
+
+  &:hover {
+    background-color: #0b868f;
+    color: white;
+  }
+}
+
 .center {
     display: flex;
     justify-content: center;

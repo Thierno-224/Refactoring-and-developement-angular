@@ -3,16 +3,16 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './pages/home/home.component';
+import { DashboardPage } from './pages/dashboard-page/dashboard-page';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { CountryComponent } from "./pages/country/country.component";
-import {StatCardComponent} from "./components/stat-card/stat-card.component";
+import { CountryDetailPage } from "./pages/country-detail-page/country-detail-page";
+import {HeaderComponent} from "./components/header-component/header-component";
 import {MedalChartComponent} from "./components/medal-chart/medal-chart.component";
 import {CountryChartComponent} from "./components/country-chart/country-chart.component";
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, NotFoundComponent, CountryComponent],
-  imports: [BrowserModule, AppRoutingModule, StatCardComponent, MedalChartComponent, CountryChartComponent],
+  declarations: [AppComponent, DashboardPage, NotFoundComponent, CountryDetailPage],
+  imports: [BrowserModule, AppRoutingModule, HeaderComponent, MedalChartComponent, CountryChartComponent],
   providers: [provideHttpClient()],
   bootstrap: [AppComponent],
 })

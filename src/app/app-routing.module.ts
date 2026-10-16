@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
+import { DashboardPage } from './pages/dashboard-page/dashboard-page';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { CountryComponent } from "./pages/country/country.component";
+import { CountryDetailPage } from "./pages/country-detail-page/country-detail-page";
 
 const routes: Routes = [
   {
     path: '',
-    component: HomeComponent,
+    component: DashboardPage,
   },
   {
-    path : 'country/:countryName',
-    component : CountryComponent
+    path : 'country/:identifier',
+    component : CountryDetailPage
   },
 
   {

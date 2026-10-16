@@ -12,6 +12,7 @@ import {Router} from "@angular/router";
 export class MedalChartComponent {
 
   private router = inject(Router);
+  countryIds: InputSignal<number[]> = input.required<number[]>();
   countries: InputSignal<string[]> = input.required<string[]>();
   sumOfAllMedalsYears: InputSignal<number[]> = input.required<number[]>();
   public pieChart!: Chart<"pie", number[], string>;
@@ -33,14 +34,14 @@ export class MedalChartComponent {
         }],
       },
       options: {
-        aspectRatio: 2.5,
+        maintainAspectRatio: false,
         onClick: (e) => {
           if (e.native) {
             const points = pieChart.getElementsAtEventForMode(e.native, 'point', { intersect: true }, true)
             if (points.length) {
               const firstPoint = points[0];
-              const countryName = pieChart.data.labels ? pieChart.data.labels[firstPoint.index] : '';
-              void this.router.navigate(['country', countryName]);
+              const countryId = this.countryIds()[firstPoint.index];
+              void this.router.navigate(['country', countryId]);
             }
           }
         }

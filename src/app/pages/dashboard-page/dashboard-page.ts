@@ -1,50 +1,63 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Component, inject, OnInit} from '@angular/core';
+import {Component, DestroyRef, inject, OnInit} from '@angular/core';
 import {DataService} from '../../services/data.service';
 import {Stat} from "../../models/olympic-models";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  selector: 'app-dashboard-page',
+  templateUrl: './dashboard-page.html',
+  styleUrls: ['./dashboard-page.scss'],
 })
-export class HomeComponent implements OnInit {
+export class DashboardPage implements OnInit {
   private dataService = inject(DataService);
+  private destroyRef = inject(DestroyRef);
 
-  public isEmpty : boolean = false;
-  public isLoading : boolean = true;
-  public totalCountries: number = 0;
-  public totalJOs: number = 0;
-  public error!: string;
-  public titlePage: string = 'Medals per Country';
-  public countries!: string[];
-  public medals!: number[];
+  public isEmpty = false;
+  public isLoading = true;
+  public totalCountries = 0;
+  public totalJOs = 0;
+  public error = '';
+  public titlePage = 'Medals per Country';
+  public countries: string[] = [];
+  public medals: number[] = [];
   public stats: Stat[] = [];
+  public countryIds: number[] = [];
 
   ngOnInit(): void {
-    this.dataService.getOlympic().subscribe(
-      (data) => {
+    this.dataService.getOlympic()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
+      next: (data) => {
         this.isLoading = false;
+
         if (data.length === 0) {
           this.isEmpty = true;
           return;
         }
-        this.totalJOs = Array.from(new Set(data.map(i => i.participations.map(p => p.year)).flat())).length;
-        this.countries = data.map(i => i.country);
+
+        const sortedData = [...data].sort((a, b) => a.country.localeCompare(b.country));
+
+        this.totalJOs = new Set(
+          data.flatMap(country => country.participations.map(p => p.year))
+        ).size;
+
+        this.countries = sortedData.map(country => country.country);
+        this.countryIds = sortedData.map(country => country.id);
         this.totalCountries = this.countries.length;
 
-        const medals = data.map(i => i.participations.map(p => p.medalsCount));
-        this.medals = medals.map(countryMedals => countryMedals.reduce((acc, medal) => acc + medal, 0));
+        this.medals = sortedData.map(country =>
+          country.participations.reduce((total, p) => total + p.medalsCount, 0)
+        );
 
         this.stats = [
-          { label: 'Number of countries', value: this.totalCountries },
-          { label: 'Number of JOs', value: this.totalJOs }
+          {label: 'Number of countries', value: this.totalCountries},
+          {label: 'Number of JOs', value: this.totalJOs}
         ];
       },
-      (error: HttpErrorResponse) => {
+      error: () => {
         this.error = "Une erreur s'est produite";
         this.isLoading = false;
       }
-    );
+    });
   }
 }

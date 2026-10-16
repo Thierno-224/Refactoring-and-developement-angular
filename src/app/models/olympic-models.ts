@@ -11,3 +11,8 @@ export interface OlympicModel {
   country: string;
   participations: ParticipationModel[];
 }
+
+export interface Stat {
+  label: string;
+  value: number;
+}
